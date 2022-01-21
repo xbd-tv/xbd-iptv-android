@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
+import tv.xbd.iptv.entity.TvShowEntity;
+
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
  * It contains an Image CardView
@@ -64,16 +66,16 @@ public class CardPresenter extends Presenter {
 
     @Override
     public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
-        Movie movie = (Movie) item;
+        TvShowEntity movie = (TvShowEntity) item;
         ImageCardView cardView = (ImageCardView) viewHolder.view;
 
         Log.d(TAG, "onBindViewHolder");
-        if (movie.getCardImageUrl() != null) {
+        if (movie.getLogo() != null) {
             cardView.setTitleText(movie.getTitle());
-            cardView.setContentText(movie.getStudio());
+            cardView.setContentText(movie.getCountry());
             cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT);
             Glide.with(viewHolder.view.getContext())
-                    .load(movie.getCardImageUrl())
+                    .load(movie.getLogo())
                     .centerCrop()
                     .error(mDefaultCardImage)
                     .into(cardView.getMainImageView());

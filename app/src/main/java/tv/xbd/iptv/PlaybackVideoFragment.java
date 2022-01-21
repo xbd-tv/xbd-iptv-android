@@ -9,6 +9,8 @@ import androidx.leanback.media.MediaPlayerAdapter;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.widget.PlaybackControlsRow;
 
+import tv.xbd.iptv.entity.TvShowEntity;
+
 /**
  * Handles video playback with media controls.
  */
@@ -20,8 +22,8 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Movie movie =
-                (Movie) getActivity().getIntent().getSerializableExtra(DetailsActivity.MOVIE);
+        final TvShowEntity movie =
+                (TvShowEntity) getActivity().getIntent().getSerializableExtra(DetailsActivity.MOVIE);
 
         VideoSupportFragmentGlueHost glueHost =
                 new VideoSupportFragmentGlueHost(PlaybackVideoFragment.this);
@@ -32,9 +34,9 @@ public class PlaybackVideoFragment extends VideoSupportFragment {
         mTransportControlGlue = new PlaybackTransportControlGlue<>(getActivity(), playerAdapter);
         mTransportControlGlue.setHost(glueHost);
         mTransportControlGlue.setTitle(movie.getTitle());
-        mTransportControlGlue.setSubtitle(movie.getDescription());
+        mTransportControlGlue.setSubtitle(movie.getCountry());
         mTransportControlGlue.playWhenPrepared();
-        playerAdapter.setDataSource(Uri.parse(movie.getVideoUrl()));
+        playerAdapter.setDataSource(Uri.parse(movie.getBestRouteUri()));
     }
 
     @Override

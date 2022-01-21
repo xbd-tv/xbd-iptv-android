@@ -38,6 +38,8 @@ import com.bumptech.glide.request.transition.Transition;
 import java.util.Collections;
 import java.util.List;
 
+import tv.xbd.iptv.entity.TvShowEntity;
+
 /*
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
  * It shows a detailed view of video and its meta plus related videos.
@@ -54,7 +56,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
 
     private static final int NUM_COLS = 10;
 
-    private Movie mSelectedMovie;
+    private TvShowEntity mSelectedMovie;
 
     private ArrayObjectAdapter mAdapter;
     private ClassPresenterSelector mPresenterSelector;
@@ -69,7 +71,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         mDetailsBackground = new DetailsSupportFragmentBackgroundController(this);
 
         mSelectedMovie =
-                (Movie) getActivity().getIntent().getSerializableExtra(DetailsActivity.MOVIE);
+                (TvShowEntity) getActivity().getIntent().getSerializableExtra(DetailsActivity.MOVIE);
         if (mSelectedMovie != null) {
             mPresenterSelector = new ClassPresenterSelector();
             mAdapter = new ArrayObjectAdapter(mPresenterSelector);
@@ -85,13 +87,13 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         }
     }
 
-    private void initializeBackground(Movie data) {
+    private void initializeBackground(TvShowEntity data) {
         mDetailsBackground.enableParallax();
         Glide.with(getActivity())
                 .asBitmap()
                 .centerCrop()
                 .error(R.drawable.default_background)
-                .load(data.getBackgroundImageUrl())
+                .load(data.getLogo())
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap bitmap,
@@ -110,7 +112,8 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
         int width = convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_WIDTH);
         int height = convertDpToPixel(getActivity().getApplicationContext(), DETAIL_THUMB_HEIGHT);
         Glide.with(getActivity())
-                .load(mSelectedMovie.getCardImageUrl())
+                // TODO 背景图片
+                .load(mSelectedMovie.getLogo())
                 .centerCrop()
                 .error(R.drawable.default_background)
                 .into(new SimpleTarget<Drawable>(width, height) {
@@ -130,17 +133,6 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                         ACTION_WATCH_TRAILER,
                         getResources().getString(R.string.watch_trailer_1),
                         getResources().getString(R.string.watch_trailer_2)));
-        actionAdapter.add(
-                new Action(
-                        ACTION_RENT,
-                        getResources().getString(R.string.rent_1),
-                        getResources().getString(R.string.rent_2)));
-        actionAdapter.add(
-                new Action(
-                        ACTION_BUY,
-                        getResources().getString(R.string.buy_1),
-                        getResources().getString(R.string.buy_2)));
-        row.setActionsAdapter(actionAdapter);
 
         mAdapter.add(row);
     }
@@ -176,18 +168,19 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
     }
 
     private void setupRelatedMovieListRow() {
-        String subcategories[] = {getString(R.string.related_movies)};
-        List<Movie> list = MovieList.getList();
-
-        Collections.shuffle(list);
-        ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new CardPresenter());
-        for (int j = 0; j < NUM_COLS; j++) {
-            listRowAdapter.add(list.get(j % 5));
-        }
-
-        HeaderItem header = new HeaderItem(0, subcategories[0]);
-        mAdapter.add(new ListRow(header, listRowAdapter));
-        mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
+        // TODO 关联频道信息
+//        String subcategories[] = {getString(R.string.related_movies)};
+//        List<Movie> list = MovieList.getList();
+//
+//        Collections.shuffle(list);
+//        ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(new CardPresenter());
+//        for (int j = 0; j < NUM_COLS; j++) {
+//            listRowAdapter.add(list.get(j % 5));
+//        }
+//
+//        HeaderItem header = new HeaderItem(0, subcategories[0]);
+//        mAdapter.add(new ListRow(header, listRowAdapter));
+//        mPresenterSelector.addClassPresenter(ListRow.class, new ListRowPresenter());
     }
 
     private int convertDpToPixel(Context context, int dp) {
@@ -203,7 +196,7 @@ public class VideoDetailsFragment extends DetailsSupportFragment {
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
 
-            if (item instanceof Movie) {
+            if (item instanceof TvShowEntity) {
                 Log.d(TAG, "Item: " + item.toString());
                 Intent intent = new Intent(getActivity(), DetailsActivity.class);
                 intent.putExtra(getResources().getString(R.string.movie), mSelectedMovie);

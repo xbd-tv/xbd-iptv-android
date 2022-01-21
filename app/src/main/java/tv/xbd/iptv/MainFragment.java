@@ -22,6 +22,9 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -35,10 +38,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
+
+import tv.xbd.iptv.entity.TvShowEntity;
 
 public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = "MainFragment";
@@ -55,6 +65,17 @@ public class MainFragment extends BrowseSupportFragment {
     private Timer mBackgroundTimer;
     private String mBackgroundUri;
     private BackgroundManager mBackgroundManager;
+    private TvShowViewModel viewModel;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(TvShowViewModel.class);
+        viewModel.showList.observe(getActivity(), list -> {
+                    loadRows();
+                }
+        );
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -64,8 +85,6 @@ public class MainFragment extends BrowseSupportFragment {
         prepareBackgroundManager();
 
         setupUIElements();
-
-        loadRows();
 
         setupEventListeners();
     }
@@ -80,22 +99,24 @@ public class MainFragment extends BrowseSupportFragment {
     }
 
     private void loadRows() {
-        List<Movie> list = MovieList.setupMovies();
-
+        setAdapter(null);
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         CardPresenter cardPresenter = new CardPresenter();
 
-        int i;
-        for (i = 0; i < NUM_ROWS; i++) {
-            if (i != 0) {
-                Collections.shuffle(list);
+        // 电视节目
+        int i = 0;
+        if (viewModel != null) {
+            // 按 genre 分类展示
+            final Map<String, List<TvShowEntity>> mapGenreList = viewModel.getGenreMapTvShowList();
+            for (Map.Entry<String, List<TvShowEntity>> item : mapGenreList.entrySet()) {
+                HeaderItem header = new HeaderItem(i, item.getKey());
+                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+                for (TvShowEntity tvShowEntity : item.getValue()) {
+                    listRowAdapter.add(tvShowEntity);
+                }
+                i++;
+                rowsAdapter.add(new ListRow(header, listRowAdapter));
             }
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
-            for (int j = 0; j < NUM_COLS; j++) {
-                listRowAdapter.add(list.get(j % 5));
-            }
-            HeaderItem header = new HeaderItem(i, MovieList.MOVIE_CATEGORY[i]);
-            rowsAdapter.add(new ListRow(header, listRowAdapter));
         }
 
         HeaderItem gridHeader = new HeaderItem(i, "PREFERENCES");
@@ -109,6 +130,7 @@ public class MainFragment extends BrowseSupportFragment {
 
         setAdapter(rowsAdapter);
     }
+
 
     private void prepareBackgroundManager() {
 
@@ -178,10 +200,10 @@ public class MainFragment extends BrowseSupportFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if (item instanceof Movie) {
-                Movie movie = (Movie) item;
+            if (item instanceof TvShowEntity) {
+                TvShowEntity movie = (TvShowEntity) item;
                 Log.d(TAG, "Item: " + item.toString());
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                Intent intent = new Intent(getActivity(), PlaybackActivity.class);
                 intent.putExtra(DetailsActivity.MOVIE, movie);
 
                 Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
@@ -208,9 +230,10 @@ public class MainFragment extends BrowseSupportFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
-            if (item instanceof Movie) {
-                mBackgroundUri = ((Movie) item).getBackgroundImageUrl();
-                startBackgroundTimer();
+            if (item instanceof TvShowEntity) {
+                // TODO 设置背景
+//                mBackgroundUri = ((TvShowEntity) item).getLogo();
+//                startBackgroundTimer();
             }
         }
     }
