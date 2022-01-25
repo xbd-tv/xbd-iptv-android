@@ -4,7 +4,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import tv.xbd.iptv.entity.TvShowEntity;
+import tv.xbd.iptv.db.entity.TvShowEntity;
 
 public interface ChannelService {
     // https://cdn.jsdelivr.net/gh/xbd-tv/xbd-iptv@main/channels/cn.json

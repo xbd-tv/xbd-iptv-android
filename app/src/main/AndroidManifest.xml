@@ -17,33 +17,40 @@
         android:required="true" />
 
     <application
-        android:allowBackup="true"
+        android:name=".IPTVApplication"
+        android:banner="@mipmap/ic_banner"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
+        android:logo="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Xbdiptv">
+        android:theme="@style/Theme.XBD.TV"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="q">
         <activity
-            android:name=".MainActivity"
-            android:banner="@drawable/app_icon_your_company"
+            android:name=".ui.MainActivity"
             android:exported="true"
-            android:icon="@drawable/app_icon_your_company"
-            android:label="@string/app_name"
-            android:logo="@drawable/app_icon_your_company"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
+            <!-- fix 图标 -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
-            android:name=".DetailsActivity"
+            android:name=".ui.PlaybackActivity"
             android:exported="false" />
         <activity
-            android:name=".PlaybackActivity"
-            android:exported="false" />
-        <activity
-            android:name=".BrowseErrorActivity"
+            android:name=".ui.BrowseErrorActivity"
             android:exported="false" />
     </application>
 

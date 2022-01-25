@@ -1,4 +1,10 @@
 <resources>
 
-    <style name="Theme.Xbdiptv" parent="@style/Theme.Leanback" />
+    <style name="Theme.XBD.TV" parent="@style/Theme.Leanback" />
+
+    <style name="Theme.XBD.TV.Fullscreen" parent="Theme.XBD.TV">
+        <item name="android:actionBarStyle">@style/Widget.Theme.XBD.TV.ActionBar.Fullscreen</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
 </resources>
